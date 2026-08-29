@@ -27,30 +27,33 @@ def main():
     repo_name = os.environ.get('GITHUB_REPOSITORY').split('/')[1]
     
     base_dir = 'images'
-    # 定義要掃描的子資料夾及其對應的類別標籤名稱
+    
+    # 對應你截圖中的大寫資料夾名稱：PTCG 與 PTCGP
     categories = {
-        'ptcg': 'PTCG',
-        'ptcgp': 'PTCGP'
+        'PTCG': 'PTCG',
+        'PTCGP': 'PTCGP'
     }
     
+    # 支援的圖片格式副檔名
     valid_extensions = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
     rows_to_add = []
     
-    # 遍歷 ptcg 及 ptcgp 資料夾
+    # 掃描 PTCG 及 PTCGP 資料夾
     for folder, category_name in categories.items():
         folder_path = os.path.join(base_dir, folder)
         
         if os.path.exists(folder_path):
             for filename in sorted(os.listdir(folder_path)):
+                # 確保只處理圖片檔案，跳過 test.txt 或 .gitkeep
                 if filename.lower().endswith(valid_extensions):
-                    # 構建 Raw 圖片網址（例如：.../images/ptcg/card01.jpg）
+                    # 構建 GitHub CDN Raw 圖片網址
                     raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{folder}/{filename}"
                     
                     if raw_url not in existing_urls:
-                        # 欄位順序：A欄: 檔名 | B欄: 圖片網址 | C欄: 卡牌類別 (PTCG / PTCGP)
+                        # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (類別: PTCG / PTCGP)
                         rows_to_add.append([filename, raw_url, category_name])
     
-    # 新增新資料到 Google Sheet
+    # 新增新資料至 Google Sheet
     if rows_to_add:
         sheet.append_rows(rows_to_add)
         print(f"成功新增 {len(rows_to_add)} 筆圖片資料至 'image' 分頁！")
