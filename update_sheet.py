@@ -15,7 +15,7 @@ def main():
     client = gspread.authorize(creds)
     
     # 開啟試算表（預設第一個工作表）
-    sheet = client.open_by_key(sheet_id).sheet1
+    sheet = client.open_by_key(sheet_id).worksheet("image")
     
     # 讀取目前表格中已有的資料，避免重複寫入
     existing_records = sheet.get_all_values()
