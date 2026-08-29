@@ -3,7 +3,10 @@ name: Sync Images to Google Sheets
 on:
   push:
     paths:
-      - 'images/**' # 當 images 資料夾有變動時觸發
+      - 'images/**'
+      - 'images/ptcg/**'
+      - 'images/ptcgp/**'
+      - 'update_sheet.py'  # 讓改腳本時也能手動/自動觸發
 
 jobs:
   sync:
