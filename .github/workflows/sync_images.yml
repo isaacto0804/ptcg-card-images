@@ -5,7 +5,7 @@ on:
     paths:
       - 'images/**'
       - 'update_sheet.py'
-  workflow_dispatch: # 支援在 GitHub Actions 頁面手動觸發執行
+  workflow_dispatch: # 支援在 GitHub Actions 頁面手動點擊執行
 
 jobs:
   sync:
