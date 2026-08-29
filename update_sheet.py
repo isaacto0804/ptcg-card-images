@@ -30,12 +30,12 @@ def main():
     valid_extensions = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
     rows_to_add = []
     
-    # 使用 os.walk 自動遞迴掃描所有層級的子資料夾
+    # 自動掃描 images 下的所有子資料夾
     if os.path.exists(base_dir):
         for root, dirs, files in os.walk(base_dir):
             for filename in sorted(files):
                 if filename.lower().endswith(valid_extensions):
-                    # 取得相對路徑（例如：PTCG/CHT 或 PTCGP）
+                    # 取得相對路徑（例如：PTCG/JPN 或 PTCGP）
                     rel_dir = os.path.relpath(root, base_dir)
                     
                     # 統一將路徑分隔符換成網址專用的正斜線 /
@@ -45,11 +45,12 @@ def main():
                     raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{url_rel_path}/{filename}"
                     
                     if raw_url not in existing_urls:
+                        # 取得不含副檔名的檔名（例如 m2_110.jpg -> m2_110）
                         filename_without_ext = os.path.splitext(filename)[0]
                         
-                        # 組合 Column C 識別碼：將層級路徑改為底線連接
-                        # 範例 1：images/PTCG/CHT/m1L_091.jpg -> PTCG_CHT_m1L_091
-                        # 範例 2：images/PTCGP/A1_1.webp -> PTCGP_A1_1
+                        # 組合 Column C 格式：
+                        # 例如：PTCG/JPN + m2_110 -> PTCG_JPN_m2_110
+                        # 例如：PTCGP + A1_1 -> PTCGP_A1_1
                         path_prefix = rel_dir.replace('\\', '_').replace('/', '_')
                         column_c_value = f"{path_prefix}_{filename_without_ext}"
                         
