@@ -27,29 +27,33 @@ def main():
     repo_name = os.environ.get('GITHUB_REPOSITORY').split('/')[1]
     
     base_dir = 'images'
-    folders = ['PTCG', 'PTCGP']
-    
     valid_extensions = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
     rows_to_add = []
     
-    # 掃描 PTCG 及 PTCGP 資料夾
-    for folder in folders:
-        folder_path = os.path.join(base_dir, folder)
-        
-        if os.path.exists(folder_path):
-            for filename in sorted(os.listdir(folder_path)):
+    # 使用 os.walk 自動遞迴掃描所有層級的子資料夾
+    if os.path.exists(base_dir):
+        for root, dirs, files in os.walk(base_dir):
+            for filename in sorted(files):
                 if filename.lower().endswith(valid_extensions):
-                    # 構建 GitHub CDN Raw 圖片網址
-                    raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{folder}/{filename}"
+                    # 取得相對路徑（例如：PTCG/CHT 或 PTCGP）
+                    rel_dir = os.path.relpath(root, base_dir)
+                    
+                    # 統一將路徑分隔符換成網址專用的正斜線 /
+                    url_rel_path = rel_dir.replace('\\', '/')
+                    
+                    # 構建 Raw 圖片網址
+                    raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{url_rel_path}/{filename}"
                     
                     if raw_url not in existing_urls:
-                        # 取得不含副檔名的檔名（例如 A1_1.webp -> A1_1）
                         filename_without_ext = os.path.splitext(filename)[0]
                         
-                        # 組合 C 欄名稱：Folder名_檔名（例如 PTCGP_A1_1）
-                        column_c_value = f"{folder}_{filename_without_ext}"
+                        # 組合 Column C 識別碼：將層級路徑改為底線連接
+                        # 範例 1：images/PTCG/CHT/m1L_091.jpg -> PTCG_CHT_m1L_091
+                        # 範例 2：images/PTCGP/A1_1.webp -> PTCGP_A1_1
+                        path_prefix = rel_dir.replace('\\', '_').replace('/', '_')
+                        column_c_value = f"{path_prefix}_{filename_without_ext}"
                         
-                        # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (PTCGP_A1_1)
+                        # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (類別與識別碼)
                         rows_to_add.append([filename, raw_url, column_c_value])
     
     # 新增新資料至 Google Sheet
