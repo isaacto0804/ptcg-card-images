@@ -4,9 +4,8 @@ on:
   push:
     paths:
       - 'images/**'
-      - 'images/ptcg/**'
-      - 'images/ptcgp/**'
-      - 'update_sheet.py'  # 讓改腳本時也能手動/自動觸發
+      - 'update_sheet.py'
+  workflow_dispatch: # 支援在 GitHub Actions 頁面手動觸發執行
 
 jobs:
   sync:
