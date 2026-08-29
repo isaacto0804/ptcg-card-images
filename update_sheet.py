@@ -27,31 +27,30 @@ def main():
     repo_name = os.environ.get('GITHUB_REPOSITORY').split('/')[1]
     
     base_dir = 'images'
+    folders = ['PTCG', 'PTCGP']
     
-    # 對應你截圖中的大寫資料夾名稱：PTCG 與 PTCGP
-    categories = {
-        'PTCG': 'PTCG',
-        'PTCGP': 'PTCGP'
-    }
-    
-    # 支援的圖片格式副檔名
     valid_extensions = ('.png', '.jpg', '.jpeg', '.webp', '.gif')
     rows_to_add = []
     
     # 掃描 PTCG 及 PTCGP 資料夾
-    for folder, category_name in categories.items():
+    for folder in folders:
         folder_path = os.path.join(base_dir, folder)
         
         if os.path.exists(folder_path):
             for filename in sorted(os.listdir(folder_path)):
-                # 確保只處理圖片檔案，跳過 test.txt 或 .gitkeep
                 if filename.lower().endswith(valid_extensions):
                     # 構建 GitHub CDN Raw 圖片網址
                     raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{folder}/{filename}"
                     
                     if raw_url not in existing_urls:
-                        # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (類別: PTCG / PTCGP)
-                        rows_to_add.append([filename, raw_url, category_name])
+                        # 取得不含副檔名的檔名（例如 A1_1.webp -> A1_1）
+                        filename_without_ext = os.path.splitext(filename)[0]
+                        
+                        # 組合 C 欄名稱：Folder名_檔名（例如 PTCGP_A1_1）
+                        column_c_value = f"{folder}_{filename_without_ext}"
+                        
+                        # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (PTCGP_A1_1)
+                        rows_to_add.append([filename, raw_url, column_c_value])
     
     # 新增新資料至 Google Sheet
     if rows_to_add:
