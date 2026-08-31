@@ -53,29 +53,30 @@ def main():
         for root, dirs, files in os.walk(base_dir):
             for filename in sorted(files):
                 if filename.lower().endswith(valid_extensions):
-                    # 取得相對路徑（例如：PTCG/JPN）
+                    # 取得相對路徑（例如：PTCGP/A1）
                     rel_dir = os.path.relpath(root, base_dir)
 
                     if rel_dir == '.':
-                        # 如果圖片直接在 images/ 目錄下
-                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/refs/heads/main/{base_dir}/{filename}"
+                        # 如果圖片直接在 images/ 根目錄下
+                        cdn_url = f"https://cdn.jsdelivr.net/gh/{repo_owner}/{repo_name}@main/{base_dir}/{filename}"
                         path_prefix = ""
                     else:
                         url_rel_path = rel_dir.replace('\\', '/')
-                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/refs/heads/main/{base_dir}/{url_rel_path}/{filename}"
+                        # 構建 jsDelivr CDN 圖片網址
+                        cdn_url = f"https://cdn.jsdelivr.net/gh/{repo_owner}/{repo_name}@main/{base_dir}/{url_rel_path}/{filename}"
                         path_prefix = rel_dir.replace('\\', '_').replace('/', '_')
 
-                    if raw_url not in existing_urls:
+                    if cdn_url not in existing_urls:
                         filename_without_ext = os.path.splitext(filename)[0]
 
-                        # 組合 Column C 格式
+                        # 組合 Column C 格式（例如：PTCGP_A1_A1_272）
                         if path_prefix:
                             column_c_value = f"{path_prefix}_{filename_without_ext}"
                         else:
                             column_c_value = filename_without_ext
 
                         # 寫入格式：A欄 (檔名) | B欄 (圖片網址) | C欄 (類別與識別碼)
-                        rows_to_add.append([filename, raw_url, column_c_value])
+                        rows_to_add.append([filename, cdn_url, column_c_value])
 
     # 新增新資料至 Google Sheet
     if rows_to_add:
