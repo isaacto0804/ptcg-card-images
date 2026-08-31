@@ -58,11 +58,11 @@ def main():
 
                     if rel_dir == '.':
                         # 如果圖片直接在 images/ 目錄下
-                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{filename}"
+                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/refs/heads/main/{base_dir}/{filename}"
                         path_prefix = ""
                     else:
                         url_rel_path = rel_dir.replace('\\', '/')
-                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{base_dir}/{url_rel_path}/{filename}"
+                        raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/refs/heads/main/{base_dir}/{url_rel_path}/{filename}"
                         path_prefix = rel_dir.replace('\\', '_').replace('/', '_')
 
                     if raw_url not in existing_urls:
