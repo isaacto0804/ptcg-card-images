@@ -1,32 +1,27 @@
-name: Sync Images to Google Sheets
+name: Run Python Script
 
 on:
   push:
-    paths:
-      - 'images/**'
-      - 'update_sheet.py'
-  workflow_dispatch: # 支援在 GitHub Actions 頁面手動點擊執行
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  sync:
+  run-script:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4 # 升級至 v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # 升級至 v5
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
-          pip install gspread google-auth
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Sync Script
-        env:
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python update_sheet.py
+      - name: Run script
+        run: python your_script.py # 請換成你的 Python 檔名
