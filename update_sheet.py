@@ -22,11 +22,11 @@ def main():
     creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
     client = gspread.authorize(creds)
 
-    # 指定開啟名稱為 "image" 的分頁
+    # 指定開啟名稱為 "images" 的分頁
     try:
-        sheet = client.open_by_key(sheet_id).worksheet("image")
+        sheet = client.open_by_key(sheet_id).worksheet("images")
     except gspread.exceptions.WorksheetNotFound:
-        print("錯誤：在 Google Sheet 中找不到名為 'image' 的分頁。")
+        print("錯誤：在 Google Sheet 中找不到名為 'images' 的分頁。")
         return
     except Exception as e:
         print(f"開啟 Google Sheet 失敗：{e}")
@@ -80,7 +80,7 @@ def main():
     # 新增新資料至 Google Sheet
     if rows_to_add:
         sheet.append_rows(rows_to_add)
-        print(f"成功新增 {len(rows_to_add)} 筆圖片資料至 'image' 分頁！")
+        print(f"成功新增 {len(rows_to_add)} 筆圖片資料至 'images' 分頁！")
     else:
         print("沒有新圖片需要更新。")
 
